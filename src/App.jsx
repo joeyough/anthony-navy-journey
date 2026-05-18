@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import dispatch01 from "./photos/dispatch-01-day13.jpg";
 
 // ============================================================
 //  THE DECODER — Division 931, Ship 3, RTC Great Lakes
@@ -1500,6 +1501,182 @@ function TimelineDeep() {
 }
 
 // ============================================================
+//  DISPATCHES — Photos sent home, framed Polaroid-style
+// ============================================================
+const DISPATCHES = [
+  {
+    src: dispatch01,
+    day: "DAY 13",
+    date: "May 17, 2026 · 6:45 PM",
+    caption: "First phone privileges in two weeks.",
+    subcaption: "That smirk says he's already running the place.",
+    rotate: -2.5,
+  },
+  // Future dispatches go here. Add new entries as Anthony sends photos home.
+  // Format:
+  // {
+  //   src: importedImage,
+  //   day: "DAY 25",
+  //   date: "May 29, 2026",
+  //   caption: "...",
+  //   subcaption: "...",
+  //   rotate: 1.8, // tilt angle in degrees, between -4 and 4
+  // },
+];
+
+function DispatchesDeep() {
+  if (DISPATCHES.length === 0) return null;
+
+  return (
+    <div className="paper" style={{ padding: "48px 20px 40px", borderTop: `1px solid ${C.brass}` }}>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          <span style={{
+            fontFamily: F.mono, fontSize: 11, color: C.crimson,
+            fontWeight: 600, letterSpacing: "0.15em",
+          }}>
+            ★ / DISPATCHES
+          </span>
+          <div className="hairline" style={{ flex: 1, marginBottom: 4 }} />
+        </div>
+        <h2 style={{
+          fontFamily: F.display, fontSize: 38, lineHeight: 0.95,
+          color: C.navy, margin: "8px 0 4px", fontWeight: 400,
+        }}>
+          POSTCARDS HOME
+        </h2>
+        <p style={{
+          fontFamily: F.serif, fontStyle: "italic", color: C.ink,
+          opacity: 0.7, fontSize: 15, lineHeight: 1.5, margin: 0,
+        }}>
+          Every photo he sends from the road. Tap to see full size.
+        </p>
+      </div>
+
+      {DISPATCHES.map((d, i) => (
+        <DispatchCard key={i} dispatch={d} />
+      ))}
+
+      <div style={{
+        background: C.creamDeep, padding: "16px 18px", marginTop: 24,
+        borderLeft: `3px solid ${C.brassBright}`,
+        fontFamily: F.serif, fontSize: 13, fontStyle: "italic",
+        color: C.ink, opacity: 0.8, lineHeight: 1.55,
+      }}>
+        This album will grow. More from Battle Stations, Pass-in-Review, Pensacola, his first squadron, his first carrier — wherever Anthony goes, the dispatches come home.
+      </div>
+    </div>
+  );
+}
+
+function DispatchCard({ dispatch }) {
+  const [zoomed, setZoomed] = useState(false);
+  const { src, day, date, caption, subcaption, rotate } = dispatch;
+
+  return (
+    <>
+      <div style={{
+        background: "transparent",
+        marginBottom: 36,
+        display: "flex", justifyContent: "center",
+        perspective: "1000px",
+      }}>
+        <button
+          onClick={() => setZoomed(true)}
+          aria-label={`${day} dispatch — tap to enlarge`}
+          style={{
+            background: "#FAF6E9",
+            padding: "16px 16px 14px",
+            border: "none",
+            boxShadow: "0 10px 24px rgba(11,30,63,0.18), 0 2px 4px rgba(11,30,63,0.12)",
+            cursor: "pointer",
+            maxWidth: 340, width: "92%",
+            transform: `rotate(${rotate}deg)`,
+            transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = `rotate(${rotate * 0.3}deg) scale(1.02)`}
+          onMouseLeave={(e) => e.currentTarget.style.transform = `rotate(${rotate}deg) scale(1)`}
+        >
+          <img
+            src={src}
+            alt={`Anthony — ${day}`}
+            style={{
+              width: "100%", display: "block",
+              background: C.ink,
+            }}
+          />
+          <div style={{
+            display: "flex", justifyContent: "space-between",
+            alignItems: "baseline", marginTop: 12, paddingBottom: 2,
+          }}>
+            <div style={{
+              fontFamily: F.mono, fontSize: 10, color: C.crimson,
+              letterSpacing: "0.18em", fontWeight: 700,
+            }}>
+              {day}
+            </div>
+            <div style={{
+              fontFamily: F.mono, fontSize: 9, color: C.ink,
+              opacity: 0.55, letterSpacing: "0.08em",
+            }}>
+              {date}
+            </div>
+          </div>
+          <div style={{
+            fontFamily: F.serif, fontSize: 15, color: C.navy,
+            fontWeight: 600, marginTop: 6, lineHeight: 1.35,
+            textAlign: "left",
+          }}>
+            {caption}
+          </div>
+          {subcaption && (
+            <div style={{
+              fontFamily: F.serif, fontSize: 13, fontStyle: "italic",
+              color: C.ink, opacity: 0.72, marginTop: 4, lineHeight: 1.4,
+              textAlign: "left",
+            }}>
+              {subcaption}
+            </div>
+          )}
+        </button>
+      </div>
+
+      {zoomed && (
+        <div
+          onClick={() => setZoomed(false)}
+          role="dialog"
+          aria-label="Enlarged photo — tap anywhere to close"
+          style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(6,18,42,0.92)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 20, cursor: "pointer",
+            animation: "fadeIn 0.2s ease-out",
+          }}
+        >
+          <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
+          <img
+            src={src}
+            alt={`Anthony — ${day}`}
+            style={{
+              maxWidth: "100%", maxHeight: "85vh",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+            }}
+          />
+          <div style={{
+            position: "absolute", top: 20, right: 20,
+            fontFamily: F.mono, fontSize: 12, color: C.brassBright,
+            letterSpacing: "0.2em",
+          }}>
+            TAP TO CLOSE ×
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ============================================================
 //  AT GRADUATION — Stripe spotter
 // ============================================================
 function GraduationDeep() {
@@ -2297,6 +2474,7 @@ export default function App() {
       <AODeep />
       <PromotionDeep />
       <TimelineDeep />
+      <DispatchesDeep />
       <GraduationDeep />
       <SailorLoreDeep />
       <FamousSailorsDeep />
